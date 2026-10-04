@@ -10,144 +10,68 @@ import {
   History,
 } from "lucide-react";
 
-function Sidebar({
-  activePage,
-  onNavigate,
-  workflowCount = 0,
-}) {
+function Sidebar({ activePage, onNavigate, workflowCount = 0 }) {
+  const items = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "workflows", label: "Workflows", icon: GitBranch, count: workflowCount },
+    { id: "lab", label: "Execution Lab", icon: BrainCircuit, badge: "NEW" },
+    { id: "history", label: "Execution History", icon: History },
+    { id: "incidents", label: "Incidents", icon: ShieldAlert, count: 3, danger: true },
+    { id: "health", label: "System Health", icon: Activity },
+  ];
+
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-icon">
-          <ShieldCheck size={22} />
-        </div>
-
-        <div>
-          <h2>
-            FlowGuard
-          </h2>
-
-          <span>
-            AI Workflow Guardian
-          </span>
-        </div>
+        <div className="brand-icon"><ShieldCheck size={22} /></div>
+        <div><h2>FlowGuard</h2><span>AI Workflow Guardian</span></div>
       </div>
 
-      <button
-        className="create-btn"
-        onClick={() =>
-          onNavigate("create")
-        }
-      >
+      <button className="create-btn" onClick={() => onNavigate("create")}>
         <Plus size={18} />
         Create Workflow
       </button>
 
       <nav className="nav">
-        <p className="nav-label">
-          MONITOR
-        </p>
+        <p className="nav-label">MONITOR</p>
+
+        {items.map((item) => {
+          const Icon = item.icon;
+          const active = activePage === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={`nav-item ${active ? "active" : ""}`}
+              onClick={() => onNavigate(item.id)}
+            >
+              <Icon size={18} />
+              <span>{item.label}</span>
+              {item.count !== undefined && (
+                <span className={`nav-count ${item.danger ? "danger" : ""}`}>{item.count}</span>
+              )}
+              {item.badge && <span className="nav-new">{item.badge}</span>}
+            </button>
+          );
+        })}
+
+        <p className="nav-label settings-label">SYSTEM</p>
 
         <button
-          className={`nav-item ${
-            activePage ===
-            "dashboard"
-              ? "active"
-              : ""
-          }`}
-          onClick={() =>
-            onNavigate("dashboard")
-          }
+          type="button"
+          className={`nav-item ${activePage === "settings" ? "active" : ""}`}
+          onClick={() => onNavigate("settings")}
         >
-          <LayoutDashboard
-            size={18}
-          />
-
-          Dashboard
-        </button>
-
-        <button
-          className={`nav-item ${
-            activePage ===
-            "workflows"
-              ? "active"
-              : ""
-          }`}
-          onClick={() =>
-            onNavigate("workflows")
-          }
-        >
-          <GitBranch size={18} />
-
-          Workflows
-
-          <span className="nav-count">
-            {workflowCount}
-          </span>
-        </button>
-
-        <button
-          className={`nav-item ${
-            activePage ===
-            "lab"
-              ? "active"
-              : ""
-          }`}
-          onClick={() =>
-            onNavigate("lab")
-          }
-        >
-          <BrainCircuit
-            size={18}
-          />
-
-          Execution Lab
-
-          <span className="nav-new">
-            NEW
-          </span>
-        </button>
-
-        <button className="nav-item">
-          <ShieldAlert
-            size={18}
-          />
-
-          Incidents
-
-          <span className="nav-count danger">
-            3
-          </span>
-        </button>
-
-        <button className="nav-item">
-          <Activity size={18} />
-
-          System Health
-        </button>
-
-        <p className="nav-label settings-label">
-          SYSTEM
-        </p>
-
-        <button className="nav-item">
           <Settings size={18} />
-
-          Settings
+          <span>Settings</span>
         </button>
       </nav>
 
       <div className="sidebar-status">
         <div className="status-dot"></div>
-
         <div>
-          <strong>
-            All systems operational
-          </strong>
-
-          <span>
-            Last checked 12 sec ago
-          </span>
+          <strong>All systems operational</strong>
+          <span>FlowGuard monitoring active</span>
         </div>
       </div>
     </aside>
