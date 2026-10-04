@@ -1,5 +1,5 @@
 import { Plus, Search } from "lucide-react";
-import WorkflowCard from "../components/WorkflowCard";
+import WorkflowCard from "../WorkflowCard";
 
 const workflows = [
   {

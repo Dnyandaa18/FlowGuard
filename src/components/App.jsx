@@ -4,10 +4,10 @@ import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 
-import Dashboard from "./pages/Dashboard";
-import Workflows from "./pages/Workflows";
-import CreateWorkflow from "./pages/CreateWorkflow";
-import ExecutionLab from "./pages/ExecutionLab";
+import Dashboard from "./components/pages/Dashboard";
+import Workflows from "./components/pages/Workflows";
+import CreateWorkflow from "./components/pages/CreateWorkflow";
+import ExecutionLab from "./components/pages/ExecutionLab";
 
 function App() {
   const [activePage, setActivePage] = useState("dashboard");
