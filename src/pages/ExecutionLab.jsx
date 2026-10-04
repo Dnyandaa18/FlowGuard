@@ -10,9 +10,9 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-import ExecutionTimeline from "../ExecutionTimeline";
-import AnomalyPanel from "../AnomalyPanel";
-import RecoveryPanel from "../RecoveryPanel";
+import ExecutionTimeline from "../components/ExecutionTimeline";
+import AnomalyPanel from "../components/AnomalyPanel";
+import RecoveryPanel from "../components/RecoveryPanel";
 
 import {
   workflowSteps,
