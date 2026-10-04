@@ -1,4 +1,3 @@
-import BaselinePanel from "../components/BaselinePanel";
 import {
   useEffect,
   useState,
@@ -24,11 +23,8 @@ import {
 import ExecutionTimeline from "../components/ExecutionTimeline";
 import AnomalyPanel from "../components/AnomalyPanel";
 import RecoveryPanel from "../components/RecoveryPanel";
+import BaselinePanel from "../components/BaselinePanel";
 
-import {
-  getWorkflows,
-  runWorkflow,
-} from "../services/api";
 
 function ExecutionLab() {
   const [workflows, setWorkflows] =
@@ -51,6 +47,12 @@ function ExecutionLab() {
 
   const [error, setError] =
     useState("");
+
+  const [baseline, setBaseline] =
+    useState(null);
+
+  const [loadingBaseline, setLoadingBaseline] =
+    useState(false);
 
   useEffect(() => {
     const loadWorkflows =
@@ -104,6 +106,35 @@ function ExecutionLab() {
     loadWorkflows();
   }, []);
 
+  const loadBaseline = async (workflowId) => {
+    if (!workflowId) {
+      setBaseline(null);
+      return;
+    }
+
+    try {
+      setLoadingBaseline(true);
+      const response = await getWorkflowBaseline(workflowId);
+
+      if (!response.success) {
+        throw new Error(
+          response.message || "Unable to load workflow baseline."
+        );
+      }
+
+      setBaseline(response.baseline || null);
+    } catch (err) {
+      console.error("Baseline loading error:", err);
+      setBaseline(null);
+    } finally {
+      setLoadingBaseline(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBaseline(selectedWorkflowId);
+  }, [selectedWorkflowId]);
+
   const selectedWorkflow =
     workflows.find(
       (workflow) =>
@@ -149,11 +180,12 @@ function ExecutionLab() {
         );
 
         setStatus(
-          execution.status ===
-            "failed"
+          execution.status === "failed"
             ? "failure"
             : "success"
         );
+
+        await loadBaseline(selectedWorkflowId);
       } catch (err) {
         console.error(err);
 
@@ -525,6 +557,11 @@ function ExecutionLab() {
           </small>
         </div>
       </div>
+
+      <BaselinePanel
+        baseline={baseline}
+        loading={loadingBaseline}
+      />
 
       <div className="lab-grid">
         <div className="lab-left">
