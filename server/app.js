@@ -7,13 +7,42 @@ const baselineRoutes =
   require("./routes/baselineRoutes");
 const app = express();
 
-const allowedOrigin =
+const configuredOrigin =
   process.env.FRONTEND_URL ||
   "http://localhost:5173";
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const isConfiguredOrigin =
+        origin === configuredOrigin;
+
+      const isFlowGuardVercelOrigin =
+        /^https:\/\/flow-guard(?:-[a-z0-9-]+)?\.vercel\.app$/i.test(
+          origin
+        );
+
+      const isLocalOrigin =
+        /^http:\/\/(localhost|127\.0\.0\.1):5173$/i.test(
+          origin
+        );
+
+      if (
+        isConfiguredOrigin ||
+        isFlowGuardVercelOrigin ||
+        isLocalOrigin
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error("CORS origin not allowed")
+      );
+    },
   })
 );
 
