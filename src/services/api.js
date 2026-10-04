@@ -124,6 +124,7 @@ export default {
   checkApiHealth,
   getWorkflows,
   getWorkflowById,
+  getWorkflowBaseline,
   createWorkflow,
   runWorkflow,
   getExecutions,
