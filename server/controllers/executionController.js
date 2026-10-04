@@ -26,8 +26,7 @@ function buildEvents(
     (step, index) => {
       if (
         isFailure &&
-        step.id ===
-          targetStep.id
+        step.id === targetStep.id
       ) {
         events.push(
           `${step.name} response timeout detected`
@@ -41,8 +40,7 @@ function buildEvents(
         index >
           workflow.steps.findIndex(
             (item) =>
-              item.id ===
-              targetStep.id
+              item.id === targetStep.id
           )
       ) {
         events.push(
@@ -123,8 +121,7 @@ async function runExecution(
 
     if (
       !workflow.steps ||
-      workflow.steps.length ===
-        0
+      workflow.steps.length === 0
     ) {
       return res.status(400).json({
         success: false,
@@ -132,6 +129,36 @@ async function runExecution(
           "Workflow has no executable steps.",
       });
     }
+
+    /*
+     * =========================================
+     * PHASE 4
+     * LOAD HISTORICAL EXECUTIONS
+     * =========================================
+     *
+     * We intentionally build the baseline
+     * BEFORE storing the current execution.
+     *
+     * This prevents the current execution from
+     * influencing its own anomaly score.
+     */
+
+    const historicalExecutions =
+      await executionCollection
+        .find({
+          workflowId,
+        })
+        .sort({
+          startedAt: -1,
+        })
+        .limit(500)
+        .toArray();
+
+    const baseline =
+      buildWorkflowBaseline(
+        workflow,
+        historicalExecutions
+      );
 
     const isFailure =
       scenario === "failure";
@@ -141,15 +168,12 @@ async function runExecution(
         (step) =>
           step.service
             ?.toLowerCase()
-            .includes(
-              "database"
-            )
+            .includes("database")
       ) ||
       workflow.steps[
         Math.min(
           2,
-          workflow.steps.length -
-            1
+          workflow.steps.length - 1
         )
       ] ||
       workflow.steps[0];
@@ -157,8 +181,7 @@ async function runExecution(
     const targetStepIndex =
       workflow.steps.findIndex(
         (step) =>
-          step.id ===
-          targetStep.id
+          step.id === targetStep.id
       );
 
     const expectedLatency =
@@ -175,31 +198,44 @@ async function runExecution(
     const failureRate =
       isFailure ? 50 : 0;
 
+    /*
+     * =========================================
+     * PHASE 4
+     * BASELINE-AWARE ANOMALY ANALYSIS
+     * =========================================
+     *
+     * If enough historical data exists,
+     * analyzeExecution uses the learned
+     * historical baseline.
+     *
+     * If there isn't enough history yet,
+     * anomalyService automatically falls
+     * back to configured thresholds.
+     */
+
     const anomaly =
       analyzeExecution({
         latency,
         expectedLatency,
         failureRate,
+        baseline,
       });
 
     const recovery =
-      generateRecoveryRecommendation(
-        {
-          risk: anomaly.risk,
-          service:
-            targetStep.service,
-          latency,
-          failureRate,
-        }
-      );
+      generateRecoveryRecommendation({
+        risk: anomaly.risk,
+        service:
+          targetStep.service,
+        latency,
+        failureRate,
+      });
 
     const stepResults =
       workflow.steps.map(
         (step, index) => {
           if (
             isFailure &&
-            index ===
-              targetStepIndex
+            index === targetStepIndex
           ) {
             return {
               ...step,
@@ -211,14 +247,12 @@ async function runExecution(
 
           if (
             isFailure &&
-            index >
-              targetStepIndex
+            index > targetStepIndex
           ) {
             return {
               ...step,
               status: "pending",
-              actualLatency:
-                null,
+              actualLatency: null,
             };
           }
 
@@ -276,6 +310,31 @@ async function runExecution(
 
       failureRate,
 
+      /*
+       * Store the baseline snapshot
+       * used for this execution.
+       *
+       * This makes the execution record
+       * explainable later.
+       */
+      baseline: {
+        learningStatus:
+          baseline.learningStatus,
+
+        sampleCount:
+          baseline.latency.sampleCount,
+
+        average:
+          baseline.latency.average,
+
+        standardDeviation:
+          baseline.latency
+            .standardDeviation,
+
+        p95:
+          baseline.latency.p95,
+      },
+
       anomaly,
 
       recovery,
@@ -322,6 +381,7 @@ async function runExecution(
 
     return res.json({
       success: true,
+
       execution:
         serializeExecution(
           execution
@@ -371,8 +431,10 @@ async function getExecutions(
 
     res.json({
       success: true,
+
       count:
         executions.length,
+
       executions:
         executions.map(
           serializeExecution
@@ -416,6 +478,7 @@ async function getExecutionById(
 
     res.json({
       success: true,
+
       execution:
         serializeExecution(
           execution

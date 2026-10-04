@@ -60,6 +60,14 @@ export async function getWorkflowById(
   );
 }
 
+export async function getWorkflowBaseline(
+  workflowId
+) {
+  return request(
+    `/baselines/${workflowId}`
+  );
+}
+
 export async function createWorkflow(
   workflow
 ) {
