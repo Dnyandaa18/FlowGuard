@@ -11,6 +11,8 @@ import Workflows from "./pages/Workflows";
 import CreateWorkflow from "./pages/CreateWorkflow";
 import ExecutionLab from "./pages/ExecutionLab";
 import ExecutionHistory from "./pages/ExecutionHistory";
+import Incidents from "./pages/Incidents";
+import SystemHealth from "./pages/SystemHealth";
 
 import {
   getWorkflows,
@@ -82,6 +84,16 @@ function App() {
       case "history":
         return (
           <ExecutionHistory />
+        );
+
+      case "incidents":
+        return (
+          <Incidents />
+        );
+
+      case "health":
+        return (
+          <SystemHealth />
         );
 
       default:
