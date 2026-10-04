@@ -3,11 +3,15 @@ function calculateAnomalyScore({
   expectedLatency,
   failureRate = 0,
 }) {
-  if (!expectedLatency || expectedLatency <= 0) {
+  if (
+    !expectedLatency ||
+    expectedLatency <= 0
+  ) {
     return 0;
   }
 
-  const latencyRatio = latency / expectedLatency;
+  const latencyRatio =
+    latency / expectedLatency;
 
   let latencyScore = 0;
 
@@ -23,14 +27,15 @@ function calculateAnomalyScore({
     latencyScore = 90;
   }
 
-  const failureScore = Math.min(
-    failureRate * 1.5,
-    100
-  );
+  const normalizedFailureRate =
+    Math.min(Math.max(failureRate, 0), 100);
+
+  const failureScore =
+    normalizedFailureRate * 1.5;
 
   const score = Math.round(
     latencyScore * 0.7 +
-    failureScore * 0.3
+    Math.min(failureScore, 100) * 0.3
   );
 
   return Math.min(score, 100);
@@ -57,13 +62,15 @@ function analyzeExecution({
   expectedLatency,
   failureRate = 0,
 }) {
-  const anomalyScore = calculateAnomalyScore({
-    latency,
-    expectedLatency,
-    failureRate,
-  });
+  const anomalyScore =
+    calculateAnomalyScore({
+      latency,
+      expectedLatency,
+      failureRate,
+    });
 
-  const risk = getRiskLevel(anomalyScore);
+  const risk =
+    getRiskLevel(anomalyScore);
 
   return {
     anomalyScore,

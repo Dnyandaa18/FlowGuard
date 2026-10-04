@@ -22,28 +22,35 @@ function runExecution(req, res) {
     });
   }
 
-  const {
-    scenario = "normal",
-  } = req.body;
+  const scenario = req.body?.scenario || "normal";
 
-  const isFailure =
-    scenario === "failure";
+  if (!["normal", "failure"].includes(scenario)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Invalid scenario. Use 'normal' or 'failure'.",
+    });
+  }
+
+  const isFailure = scenario === "failure";
 
   const targetStep =
-    workflow.steps[2] || workflow.steps[0];
+    workflow.steps.find(
+      (step) => step.id === 3
+    ) || workflow.steps[0];
+
+  const expectedLatency =
+    targetStep.expectedLatency;
 
   const latency = isFailure
-    ? targetStep.expectedLatency * 8
-    : targetStep.expectedLatency * 0.8;
+    ? expectedLatency * 8
+    : Math.round(expectedLatency * 0.8);
 
-  const failureRate = isFailure
-    ? 32
-    : 0;
+  const failureRate = isFailure ? 32 : 0;
 
   const analysis = analyzeExecution({
     latency,
-    expectedLatency:
-      targetStep.expectedLatency,
+    expectedLatency,
     failureRate,
   });
 
@@ -55,9 +62,9 @@ function runExecution(req, res) {
       failureRate,
     });
 
-  const stepResults =
-    workflow.steps.map((step, index) => {
-      if (isFailure && index === 2) {
+  const stepResults = workflow.steps.map(
+    (step) => {
+      if (isFailure && step.id === targetStep.id) {
         return {
           ...step,
           status: "failed",
@@ -65,40 +72,41 @@ function runExecution(req, res) {
         };
       }
 
+      if (isFailure && step.id > targetStep.id) {
+        return {
+          ...step,
+          status: "pending",
+          actualLatency: null,
+        };
+      }
+
       return {
         ...step,
         status: "completed",
-        actualLatency:
-          Math.round(
-            step.expectedLatency * 0.8
-          ),
+        actualLatency: Math.round(
+          step.expectedLatency * 0.8
+        ),
       };
-    });
+    }
+  );
+
+  const now = new Date().toISOString();
 
   const execution = {
     executionId: `exec_${Date.now()}`,
-
     workflowId: workflow.id,
-
     workflowName: workflow.name,
-
+    scenario,
     status: isFailure
       ? "failed"
       : "completed",
-
-    startedAt: new Date().toISOString(),
-
-    completedAt:
-      new Date().toISOString(),
-
+    startedAt: now,
+    completedAt: now,
     latency,
-
+    expectedLatency,
     failureRate,
-
     anomaly: analysis,
-
     recovery,
-
     steps: stepResults,
   };
 

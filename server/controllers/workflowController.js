@@ -33,17 +33,17 @@ function createWorkflow(req, res) {
     steps,
   } = req.body;
 
-  if (!name || !steps || !Array.isArray(steps)) {
+  if (!name || !Array.isArray(steps) || steps.length === 0) {
     return res.status(400).json({
       success: false,
       message:
-        "Workflow name and steps are required",
+        "Workflow name and at least one step are required",
     });
   }
 
   const workflow = {
     id: `wf_${Date.now()}`,
-    name,
+    name: name.trim(),
     description: description || "",
     status: "healthy",
     successRate: 100,
