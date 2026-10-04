@@ -1,0 +1,7 @@
+{
+  "name": "flowguard",
+  "version": "1.0.0",
+  "dependencies": {
+    "lucide-react": "^1.51.0"
+  }
+}
