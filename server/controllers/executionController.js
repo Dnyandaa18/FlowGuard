@@ -11,6 +11,10 @@ const {
   generateRecoveryRecommendation,
 } = require("../services/recoveryService");
 
+const {
+  buildWorkflowBaseline,
+} = require("../services/baselineService");
+
 function buildEvents(
   workflow,
   targetStep,

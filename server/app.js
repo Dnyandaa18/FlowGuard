@@ -3,7 +3,8 @@ const cors = require("cors");
 
 const workflowRoutes = require("./routes/workflowRoutes");
 const executionRoutes = require("./routes/executionRoutes");
-
+const baselineRoutes =
+  require("./routes/baselineRoutes");
 const app = express();
 
 app.use(
@@ -52,6 +53,10 @@ app.use(
 app.use(
   "/api/executions",
   executionRoutes
+);
+app.use(
+  "/api/baselines",
+  baselineRoutes
 );
 
 app.use((req, res) => {
