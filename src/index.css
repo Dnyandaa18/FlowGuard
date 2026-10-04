@@ -1754,3 +1754,373 @@ button {
     line-height: 1.5;
   }
 }
+
+.spin {
+  animation: flowguard-spin 0.8s linear infinite;
+}
+
+@keyframes flowguard-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   PHASE 2 - WORKFLOW CENTER
+========================================= */
+
+.workflow-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.filter-btn:hover {
+  color: var(--text);
+  border-color: #343847;
+}
+
+.filter-btn.active {
+  color: var(--text);
+  border-color: var(--purple);
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.workflow-step.editable {
+  align-items: flex-start;
+}
+
+.step-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.4fr)
+    minmax(0, 1fr)
+    120px;
+  gap: 10px;
+}
+
+.step-fields .form-input {
+  min-width: 0;
+}
+
+.latency-input {
+  position: relative;
+}
+
+.latency-input .form-input {
+  padding-right: 34px;
+}
+
+.latency-input span {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.form-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.form-message.error {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.form-message.success {
+  color: #86efac;
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.page-state {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: rgba(15, 17, 24, 0.6);
+  padding: 30px;
+}
+
+.page-state.error {
+  justify-content: flex-start;
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.page-state strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.page-state p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.simulation-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.workflow-select-wrapper {
+  min-width: 230px;
+}
+
+.workflow-select-wrapper label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.workflow-select {
+  position: relative;
+}
+
+.workflow-select select {
+  appearance: none;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 36px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel-2);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+.workflow-select svg {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.simulation-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 1000px) {
+  .step-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .simulation-controls {
+    width: 100%;
+    margin-left: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .workflow-select-wrapper {
+    width: 100%;
+  }
+
+  .simulation-buttons {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .simulation-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+/* =========================================
+   PHASE 3 - EXECUTION HISTORY
+========================================= */
+
+.history-summary {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.history-summary > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--panel);
+}
+
+.history-summary svg {
+  color: var(--purple);
+}
+
+.history-summary span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.history-summary strong {
+  display: block;
+  color: var(--text);
+  font-size: 22px;
+}
+
+.history-panel {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.history-header,
+.history-row {
+  display: grid;
+  grid-template-columns:
+    1.5fr
+    1fr
+    0.8fr
+    0.9fr
+    1.2fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.history-header {
+  padding: 13px 18px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.history-row {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.history-row:last-child {
+  border-bottom: none;
+}
+
+.history-workflow strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.history-workflow small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.history-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  text-transform: capitalize;
+}
+
+.history-status.completed {
+  color: #86efac;
+}
+
+.history-status.failed {
+  color: #fca5a5;
+}
+
+.history-risk {
+  display: inline-flex;
+  flex-direction: column;
+  width: fit-content;
+  font-weight: 700;
+}
+
+.history-risk small {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.history-risk.low {
+  color: #86efac;
+}
+
+.history-risk.medium {
+  color: #fde68a;
+}
+
+.history-risk.high,
+.history-risk.critical {
+  color: #fca5a5;
+}
+
+.history-date {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .history-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .history-panel {
+    overflow-x: auto;
+  }
+
+  .history-header,
+  .history-row {
+    min-width: 850px;
+  }
+}

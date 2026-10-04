@@ -1,7 +1,13 @@
-function calculateAnomalyScore({
+function clamp(value, min, max) {
+  return Math.min(
+    Math.max(value, min),
+    max
+  );
+}
+
+function calculateLatencyScore({
   latency,
   expectedLatency,
-  failureRate = 0,
 }) {
   if (
     !expectedLatency ||
@@ -10,35 +16,66 @@ function calculateAnomalyScore({
     return 0;
   }
 
-  const latencyRatio =
+  const ratio =
     latency / expectedLatency;
 
-  let latencyScore = 0;
-
-  if (latencyRatio <= 1) {
-    latencyScore = 5;
-  } else if (latencyRatio <= 1.5) {
-    latencyScore = 20;
-  } else if (latencyRatio <= 2) {
-    latencyScore = 40;
-  } else if (latencyRatio <= 4) {
-    latencyScore = 70;
-  } else {
-    latencyScore = 90;
+  if (ratio <= 1) {
+    return 5;
   }
 
-  const normalizedFailureRate =
-    Math.min(Math.max(failureRate, 0), 100);
+  if (ratio <= 1.25) {
+    return 15;
+  }
+
+  if (ratio <= 1.5) {
+    return 30;
+  }
+
+  if (ratio <= 2) {
+    return 50;
+  }
+
+  if (ratio <= 4) {
+    return 75;
+  }
+
+  return 95;
+}
+
+function calculateFailureScore(
+  failureRate = 0
+) {
+  const normalizedRate = clamp(
+    failureRate,
+    0,
+    100
+  );
+
+  return normalizedRate;
+}
+
+function calculateAnomalyScore({
+  latency,
+  expectedLatency,
+  failureRate = 0,
+}) {
+  const latencyScore =
+    calculateLatencyScore({
+      latency,
+      expectedLatency,
+    });
 
   const failureScore =
-    normalizedFailureRate * 1.5;
+    calculateFailureScore(
+      failureRate
+    );
 
   const score = Math.round(
     latencyScore * 0.7 +
-    Math.min(failureScore, 100) * 0.3
+      failureScore * 0.3
   );
 
-  return Math.min(score, 100);
+  return clamp(score, 0, 100);
 }
 
 function getRiskLevel(score) {
@@ -76,11 +113,22 @@ function analyzeExecution({
     anomalyScore,
     risk,
     anomalous: anomalyScore >= 60,
+    latencyRatio:
+      expectedLatency > 0
+        ? Number(
+            (
+              latency /
+              expectedLatency
+            ).toFixed(2)
+          )
+        : null,
   };
 }
 
 module.exports = {
   calculateAnomalyScore,
+  calculateLatencyScore,
+  calculateFailureScore,
   getRiskLevel,
   analyzeExecution,
 };

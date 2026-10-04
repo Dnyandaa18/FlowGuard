@@ -1,4 +1,3 @@
-
 import {
   CircleCheck,
   CircleX,
@@ -6,26 +5,15 @@ import {
   LoaderCircle,
 } from "lucide-react";
 
-function ExecutionTimeline({ steps, scenario, status }) {
-  const getStepStatus = (index) => {
-    if (status === "idle") return "pending";
-
-    if (scenario === "normal" || status === "recovered") {
-      return "completed";
-    }
-
-    if (index < 2) return "completed";
-    if (index === 2) return "failed";
-
-    return "pending";
-  };
-
-  const getIcon = (stepStatus) => {
-    if (stepStatus === "completed") {
+function ExecutionTimeline({
+  steps = [],
+}) {
+  const getIcon = (status) => {
+    if (status === "completed") {
       return <CircleCheck size={19} />;
     }
 
-    if (stepStatus === "failed") {
+    if (status === "failed") {
       return <CircleX size={19} />;
     }
 
@@ -37,7 +25,10 @@ function ExecutionTimeline({ steps, scenario, status }) {
       <div className="execution-panel-heading">
         <div>
           <h2>Execution Timeline</h2>
-          <p>Step-by-step workflow execution</p>
+
+          <p>
+            Step-by-step workflow execution
+          </p>
         </div>
 
         <span className="timeline-count">
@@ -46,38 +37,56 @@ function ExecutionTimeline({ steps, scenario, status }) {
       </div>
 
       <div className="timeline">
-        {steps.map((step, index) => {
-          const stepStatus = getStepStatus(index);
+        {steps.map((step) => {
+          const status =
+            step.status || "pending";
 
           return (
-            <div className="timeline-item" key={step.id}>
-              <div className={`timeline-marker ${stepStatus}`}>
-                {getIcon(stepStatus)}
+            <div
+              className="timeline-item"
+              key={step.id}
+            >
+              <div
+                className={`timeline-marker ${status}`}
+              >
+                {getIcon(status)}
               </div>
 
               <div className="timeline-content">
                 <div className="timeline-top">
                   <div>
-                    <h3>{step.name}</h3>
-                    <span>{step.service}</span>
+                    <h3>
+                      {step.name}
+                    </h3>
+
+                    <span>
+                      {step.service}
+                    </span>
                   </div>
 
-                  <span className={`step-badge ${stepStatus}`}>
-                    {stepStatus}
+                  <span
+                    className={`step-badge ${status}`}
+                  >
+                    {status}
                   </span>
                 </div>
 
                 <div className="timeline-bottom">
                   <span>
                     <LoaderCircle size={12} />
-                    {stepStatus === "failed"
-                      ? "2840ms"
-                      : stepStatus === "completed"
-                      ? step.duration
+
+                    {step.actualLatency !==
+                    null &&
+                    step.actualLatency !==
+                      undefined
+                      ? `${step.actualLatency}ms`
                       : "--"}
                   </span>
 
-                  <span>Step {step.id}</span>
+                  <span>
+                    Expected:{" "}
+                    {step.expectedLatency}ms
+                  </span>
                 </div>
               </div>
             </div>

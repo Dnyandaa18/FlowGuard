@@ -1,4 +1,3 @@
-
 import {
   LayoutDashboard,
   GitBranch,
@@ -8,9 +7,14 @@ import {
   Plus,
   ShieldCheck,
   BrainCircuit,
+  History,
 } from "lucide-react";
 
-function Sidebar({ activePage, onNavigate }) {
+function Sidebar({
+  activePage,
+  onNavigate,
+  workflowCount = 0,
+}) {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -19,69 +23,116 @@ function Sidebar({ activePage, onNavigate }) {
         </div>
 
         <div>
-          <h2>FlowGuard</h2>
-          <span>AI Workflow Guardian</span>
+          <h2>
+            FlowGuard
+          </h2>
+
+          <span>
+            AI Workflow Guardian
+          </span>
         </div>
       </div>
 
       <button
         className="create-btn"
-        onClick={() => onNavigate("create")}
+        onClick={() =>
+          onNavigate("create")
+        }
       >
         <Plus size={18} />
         Create Workflow
       </button>
 
       <nav className="nav">
-        <p className="nav-label">MONITOR</p>
+        <p className="nav-label">
+          MONITOR
+        </p>
 
         <button
           className={`nav-item ${
-            activePage === "dashboard" ? "active" : ""
+            activePage ===
+            "dashboard"
+              ? "active"
+              : ""
           }`}
-          onClick={() => onNavigate("dashboard")}
+          onClick={() =>
+            onNavigate("dashboard")
+          }
         >
-          <LayoutDashboard size={18} />
+          <LayoutDashboard
+            size={18}
+          />
+
           Dashboard
         </button>
 
         <button
           className={`nav-item ${
-            activePage === "workflows" ? "active" : ""
+            activePage ===
+            "workflows"
+              ? "active"
+              : ""
           }`}
-          onClick={() => onNavigate("workflows")}
+          onClick={() =>
+            onNavigate("workflows")
+          }
         >
           <GitBranch size={18} />
+
           Workflows
-          <span className="nav-count">8</span>
+
+          <span className="nav-count">
+            {workflowCount}
+          </span>
         </button>
 
         <button
           className={`nav-item ${
-            activePage === "lab" ? "active" : ""
+            activePage ===
+            "lab"
+              ? "active"
+              : ""
           }`}
-          onClick={() => onNavigate("lab")}
+          onClick={() =>
+            onNavigate("lab")
+          }
         >
-          <BrainCircuit size={18} />
+          <BrainCircuit
+            size={18}
+          />
+
           Execution Lab
-          <span className="nav-new">NEW</span>
+
+          <span className="nav-new">
+            NEW
+          </span>
         </button>
 
         <button className="nav-item">
-          <ShieldAlert size={18} />
+          <ShieldAlert
+            size={18}
+          />
+
           Incidents
-          <span className="nav-count danger">3</span>
+
+          <span className="nav-count danger">
+            3
+          </span>
         </button>
 
         <button className="nav-item">
           <Activity size={18} />
+
           System Health
         </button>
 
-        <p className="nav-label settings-label">SYSTEM</p>
+        <p className="nav-label settings-label">
+          SYSTEM
+        </p>
 
         <button className="nav-item">
           <Settings size={18} />
+
           Settings
         </button>
       </nav>
@@ -90,8 +141,13 @@ function Sidebar({ activePage, onNavigate }) {
         <div className="status-dot"></div>
 
         <div>
-          <strong>All systems operational</strong>
-          <span>Last checked 12 sec ago</span>
+          <strong>
+            All systems operational
+          </strong>
+
+          <span>
+            Last checked 12 sec ago
+          </span>
         </div>
       </div>
     </aside>

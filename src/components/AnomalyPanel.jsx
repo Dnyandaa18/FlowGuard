@@ -1,4 +1,3 @@
-
 import {
   Activity,
   AlertTriangle,
@@ -6,30 +5,49 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-function AnomalyPanel({ result, status }) {
-  const isCritical =
-    result &&
-    result.risk === "Critical" &&
+function AnomalyPanel({
+  result,
+  status,
+}) {
+  const anomaly =
+    result?.anomaly;
+
+  const isAnomalous =
+    anomaly?.anomalous &&
     status !== "recovered";
+
+  const score =
+    anomaly?.anomalyScore;
+
+  const risk =
+    anomaly?.risk;
 
   const metrics = [
     {
       label: "Anomaly Score",
-      value: result ? `${result.anomalyScore}/100` : "--",
+      value:
+        score !== undefined
+          ? `${score}/100`
+          : "--",
       icon: <Gauge size={18} />,
-      critical: isCritical,
     },
     {
       label: "Execution Latency",
-      value: result ? `${result.latency}ms` : "--",
+      value:
+        result
+          ? `${result.latency}ms`
+          : "--",
       icon: <Activity size={18} />,
-      critical: isCritical,
     },
     {
       label: "Failure Rate",
-      value: result ? result.failureRate : "--",
-      icon: <AlertTriangle size={18} />,
-      critical: isCritical,
+      value:
+        result
+          ? `${result.failureRate}%`
+          : "--",
+      icon: (
+        <AlertTriangle size={18} />
+      ),
     },
   ];
 
@@ -37,8 +55,13 @@ function AnomalyPanel({ result, status }) {
     <div className="anomaly-panel">
       <div className="anomaly-heading">
         <div>
-          <h2>Anomaly Intelligence</h2>
-          <p>Workflow behavior analysis</p>
+          <h2>
+            Anomaly Intelligence
+          </h2>
+
+          <p>
+            Workflow behavior analysis
+          </p>
         </div>
 
         <ShieldCheck size={21} />
@@ -47,54 +70,89 @@ function AnomalyPanel({ result, status }) {
       <div className="anomaly-score">
         <div
           className={`score-circle ${
-            isCritical ? "critical" : result ? "safe" : ""
+            isAnomalous
+              ? "critical"
+              : result
+              ? "safe"
+              : ""
           }`}
         >
           <strong>
-            {result ? result.anomalyScore : "--"}
+            {score ?? "--"}
           </strong>
-          <span>RISK SCORE</span>
+
+          <span>
+            RISK SCORE
+          </span>
         </div>
 
         <div>
-          <span className="metric-caption">Current Risk Level</span>
+          <span className="metric-caption">
+            Current Risk Level
+          </span>
 
-          <h3 className={isCritical ? "danger-text" : "safe-text"}>
-            {result ? result.risk : "Not analyzed"}
+          <h3
+            className={
+              isAnomalous
+                ? "danger-text"
+                : "safe-text"
+            }
+          >
+            {risk || "Not analyzed"}
           </h3>
 
           <p>
             {result
-              ? isCritical
-                ? "Unusual behavior detected."
-                : "No significant anomaly detected."
-              : "Run a simulation to analyze behavior."}
+              ? isAnomalous
+                ? "Abnormal workflow behavior detected."
+                : "Execution is within expected parameters."
+              : "Run a workflow to analyze behavior."}
           </p>
         </div>
       </div>
 
       <div className="anomaly-metrics">
-        {metrics.map((metric) => (
-          <div className="anomaly-metric" key={metric.label}>
-            <div className="metric-icon">
-              {metric.icon}
-            </div>
+        {metrics.map(
+          (metric) => (
+            <div
+              className="anomaly-metric"
+              key={metric.label}
+            >
+              <div className="metric-icon">
+                {metric.icon}
+              </div>
 
-            <div>
-              <span>{metric.label}</span>
-              <strong className={metric.critical ? "danger-text" : ""}>
-                {metric.value}
-              </strong>
+              <div>
+                <span>
+                  {metric.label}
+                </span>
+
+                <strong
+                  className={
+                    isAnomalous
+                      ? "danger-text"
+                      : ""
+                  }
+                >
+                  {metric.value}
+                </strong>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
 
-      <div className={`detection-status ${isCritical ? "detected" : ""}`}>
+      <div
+        className={`detection-status ${
+          isAnomalous
+            ? "detected"
+            : ""
+        }`}
+      >
         <span className="detection-dot"></span>
 
         {result
-          ? isCritical
+          ? isAnomalous
             ? "Anomaly detected in execution"
             : "Execution within expected parameters"
           : "Waiting for execution data"}

@@ -14,12 +14,34 @@ app.use(
 
 app.use(express.json());
 
+const {
+  getDatabase,
+} = require("./config/database");
+
 app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "FlowGuard API is running",
-    timestamp: new Date().toISOString(),
-  });
+  try {
+    getDatabase();
+
+    res.json({
+      success: true,
+      message:
+        "FlowGuard API is running",
+      database:
+        "connected",
+      timestamp:
+        new Date().toISOString(),
+    });
+  } catch {
+    res.status(503).json({
+      success: false,
+      message:
+        "FlowGuard API database is unavailable",
+      database:
+        "disconnected",
+      timestamp:
+        new Date().toISOString(),
+    });
+  }
 });
 
 app.use(
