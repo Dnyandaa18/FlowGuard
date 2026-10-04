@@ -6,8 +6,8 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
-import StatCard from "../StatCard";
-import WorkflowCard from "../WorkflowCard";
+import StatCard from "../components/StatCard";
+import WorkflowCard from "../components/WorkflowCard";
 import AlertItem from "../components/AlertItem";
 
 const workflows = [

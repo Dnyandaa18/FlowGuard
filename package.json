@@ -1,6 +1,14 @@
 {
   "name": "flowguard",
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "node server/server.cjs"
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^18.0.5",
@@ -12,10 +20,4 @@
   "devDependencies": {
     "vite": "^8.3.2"
   }
-}
-
-"scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview"
 }
